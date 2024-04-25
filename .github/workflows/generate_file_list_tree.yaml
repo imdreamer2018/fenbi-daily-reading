@@ -24,7 +24,6 @@ jobs:
     - name: Run tree.js script
       run: node tree.js
 
-    - uses: actions/checkout@v3
     - name: Commit and push if changes
       run: |
         git config --local user.email "743295483@qq.com"
