@@ -51,31 +51,29 @@
 <div id="file-tree"></div>
 
 <script>
-fetch('file_list_tree.json')
-    .then(response => response.json())
-    .then(files => {
-        const tree = createFileTree(files);
-        document.getElementById('file-tree').appendChild(tree);
-    });
+    fetch('file_list_tree.json')
+        .then(response => response.json())
+        .then(files => {
+            const tree = createFileTree(files);
+            document.getElementById('file-tree').appendChild(tree);
+        });
 
-function createFileTree(fileList) {
+    function createFileTree(fileList) {
     const root = document.createElement('ul');
 
     fileList.forEach(filePath => {
         const parts = filePath.split('/');
         let currentLevel = root;
 
-        parts.forEach(part => {
+        parts.forEach((part, index) => {
             let existingPath = Array.from(currentLevel.children).find(
-                child => child.textContent === part
+                child => child.textContent.trim() === part
             );
 
             if (!existingPath) {
                 const newItem = document.createElement('li');
-                newItem.textContent = part;
-                currentLevel.appendChild(newItem);
 
-                if (part.includes('.')) {
+                if (index === parts.length - 1) {
                     // It's a file
                     const link = document.createElement('a');
                     link.href = filePath;
@@ -83,10 +81,13 @@ function createFileTree(fileList) {
                     newItem.appendChild(link);
                 } else {
                     // It's a directory
+                    newItem.textContent = part;
                     const newLevel = document.createElement('ul');
                     newItem.appendChild(newLevel);
                     currentLevel = newLevel;
                 }
+
+                currentLevel.appendChild(newItem);
             } else {
                 // Move to the next level
                 currentLevel = existingPath.querySelector('ul') || existingPath;
@@ -96,6 +97,7 @@ function createFileTree(fileList) {
 
     return root;
 }
+
 </script>
 
 </body>
