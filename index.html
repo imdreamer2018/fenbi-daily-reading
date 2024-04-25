@@ -69,59 +69,62 @@
             const tree = createFileTree(files);
             document.getElementById('file-tree').appendChild(tree);
         });
-
+    
     function createFileTree(fileList) {
-        const root = document.createElement('ul');
+    const root = document.createElement('ul');
 
-        fileList.forEach(filePath => {
-            const parts = filePath.split('/');
-            let currentLevel = root;
+    fileList.forEach(filePath => {
+        const parts = filePath.split('/');
+        let currentLevel = root;
 
-            parts.forEach((part, index) => {
-                let existingPath = Array.from(currentLevel.children).find(
-                    child => child.textContent.trim() === part
-                );
+        parts.forEach((part, index) => {
+            let existingPath = Array.from(currentLevel.children).find(
+                child => child.textContent.trim() === part
+            );
 
-                if (!existingPath) {
-                    const newItem = document.createElement('li');
+            if (!existingPath) {
+                const newItem = document.createElement('li');
 
-                    if (index === parts.length - 1) {
-                        // It's a file
-                        newItem.classList.add('file');
-                        const link = document.createElement('a');
-                        link.href = filePath;
-                        link.textContent = part;
-                        newItem.appendChild(link);
-                    } else {
-                        // It's a directory
-                        newItem.classList.add('folder');
-                        const span = document.createElement('span');
-                        span.textContent = part;
-                        newItem.appendChild(span);
-                        const newLevel = document.createElement('ul');
-                        newItem.appendChild(newLevel);
-                        currentLevel = newLevel;
-                        span.onclick = function(event) {
-                            event.stopPropagation();
-                            newItem.classList.toggle('open');
-                        };
-                    }
-
+                if (index === parts.length - 1) {
+                    // It's a file
+                    newItem.classList.add('file');
+                    const link = document.createElement('a');
+                    link.href = filePath;
+                    link.textContent = part;
+                    newItem.appendChild(link);
                     currentLevel.appendChild(newItem);
                 } else {
-                    // Move to the next level
-                    currentLevel = existingPath.querySelector('ul') || existingPath;
-                    if (!currentLevel) {
-                    // 如果现有路径没有ul元素，我们需要创建一个
+                    // It's a directory
+                    newItem.classList.add('folder');
+                    const span = document.createElement('span');
+                    span.textContent = part;
+                    newItem.appendChild(span);
+                    const newLevel = document.createElement('ul');
+                    newItem.appendChild(newLevel);
+                    currentLevel.appendChild(newItem);
+                    span.onclick = function(event) {
+                        event.stopPropagation();
+                        newItem.classList.toggle('open');
+                    };
+                    // Only update the currentLevel if it's a directory
+                    currentLevel = newLevel;
+                }
+            } else {
+                // Move to the next level
+                currentLevel = existingPath.querySelector('ul');
+                if (!currentLevel) {
+                    // If the existing path does not have a ul, we need to create one
                     currentLevel = document.createElement('ul');
                     existingPath.appendChild(currentLevel);
-                    }
                 }
-            });
+            }
         });
+    });
 
-        return root;
-    }
+    return root;
+}
+
+
 </script>
 
 </body>
