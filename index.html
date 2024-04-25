@@ -16,46 +16,42 @@
     #file-tree ul {
         list-style-type: none;
         padding-left: 20px;
-        margin-top: 0;
-        margin-bottom: 0;
+        margin: 0;
     }
 
     #file-tree li {
         margin: 5px 0;
         position: relative;
-        padding-left: 20px;
+    }
+
+    #file-tree li.folder > span {
         cursor: pointer;
     }
 
     #file-tree li.folder > ul {
-        display: none; /* 默认隐藏子目录 */
+        display: none;
     }
 
     #file-tree li.folder.open > ul {
-        display: block; /* 展开状态显示子目录 */
+        display: block;
     }
 
-    #file-tree li.folder::before {
-        content: '▶'; /* 默认为闭合状态的图标 */
+    #file-tree li.folder > span::before {
+        content: '▶ ';
         margin-right: 5px;
-        position: absolute;
-        left: 0;
     }
 
-    #file-tree li.folder.open::before {
-        content: '▼'; /* 展开状态的图标 */
+    #file-tree li.folder.open > span::before {
+        content: '▼ ';
     }
 
-    /* 文件夹和文件的样式 */
     #file-tree li.file {
         cursor: default;
     }
 
     #file-tree li.file::before {
-        content: '📄';
+        content: '📄 ';
         margin-right: 5px;
-        position: absolute;
-        left: 0;
     }
 </style>
 </head>
@@ -73,42 +69,45 @@
             const tree = createFileTree(files);
             document.getElementById('file-tree').appendChild(tree);
         });
-
-    function createFileTree(files) {
+    function createFileTree(fileList) {
         const root = document.createElement('ul');
 
-        function addFilesToTree(parent, fileList) {
-            fileList.forEach(file => {
-                const parts = file.split('/');
-                const item = document.createElement('li');
-                item.textContent = parts[parts.length - 1] || parts[parts.length - 2];
-                item.classList.add(parts.length > 1 ? 'folder' : 'file');
+        fileList.forEach(filePath => {
+            const parts = filePath.split('/');
+            let currentLevel = root;
 
-                if (parts.length > 1) {
-                    const subList = document.createElement('ul');
-                    const subFiles = files.filter(f => f.startsWith(file) && f !== file);
-                    addFilesToTree(subList, subFiles);
-                    item.appendChild(subList);
-                    item.addEventListener('click', function(event) {
-                        event.stopPropagation();
-                        item.classList.toggle('open');
-                    });
+            parts.forEach((part, index) => {
+                let existingPath = Array.from(currentLevel.children).find(
+                    child => child.textContent.trim() === part
+                );
+
+                if (!existingPath) {
+                    const newItem = document.createElement('li');
+
+                    if (index === parts.length - 1) {
+                        // It's a file
+                        const link = document.createElement('a');
+                        link.href = filePath;
+                        link.textContent = part;
+                        newItem.appendChild(link);
+                    } else {
+                        // It's a directory
+                        newItem.textContent = part;
+                        const newLevel = document.createElement('ul');
+                        newItem.appendChild(newLevel);
+                        currentLevel = newLevel;
+                    }
+
+                    currentLevel.appendChild(newItem);
                 } else {
-                    item.removeEventListener('click', function(event) {
-                        event.stopPropagation();
-                    });
+                    // Move to the next level
+                    currentLevel = existingPath.querySelector('ul') || existingPath;
                 }
-
-                parent.appendChild(item);
             });
-        }
+        });
 
-            addFilesToTree(root, files.filter(file => !file.includes('/')));
-            return root;
-        }
-
-        const fileTree = createFileTree(files);
-        document.getElementById('file-tree').appendChild(fileTree);    
+        return root;
+}
 
 </script>
 
