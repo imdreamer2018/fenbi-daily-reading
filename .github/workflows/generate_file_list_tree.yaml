@@ -28,3 +28,5 @@ jobs:
         git add file_list_tree.json
         git commit -m "Update file_list_tree.json" -a || echo "No changes to commit"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_PERSONAL_ACCESS_TOKEN }}
