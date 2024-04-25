@@ -111,6 +111,11 @@
                 } else {
                     // Move to the next level
                     currentLevel = existingPath.querySelector('ul') || existingPath;
+                    if (!currentLevel) {
+                    // 如果现有路径没有ul元素，我们需要创建一个
+                    currentLevel = document.createElement('ul');
+                    existingPath.appendChild(currentLevel);
+                    }
                 }
             });
         });
