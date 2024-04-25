@@ -69,7 +69,6 @@
             const tree = createFileTree(files);
             document.getElementById('file-tree').appendChild(tree);
         });
-    
     function createFileTree(fileList) {
     const root = document.createElement('ul');
 
@@ -79,11 +78,12 @@
 
         parts.forEach((part, index) => {
             let existingPath = Array.from(currentLevel.children).find(
-                child => child.textContent.trim() === part
+                child => child.getAttribute('data-name') === part && child.classList.contains(index === parts.length - 1 ? 'file' : 'folder')
             );
 
             if (!existingPath) {
                 const newItem = document.createElement('li');
+                newItem.setAttribute('data-name', part);
 
                 if (index === parts.length - 1) {
                     // It's a file
@@ -113,7 +113,7 @@
                 // Move to the next level
                 currentLevel = existingPath.querySelector('ul');
                 if (!currentLevel) {
-                    // If the existing path does not have a ul, we need to create one
+                    // If the existing path does not have a 'ul', we need to create one
                     currentLevel = document.createElement('ul');
                     existingPath.appendChild(currentLevel);
                 }
@@ -123,7 +123,6 @@
 
     return root;
 }
-
 
 </script>
 
