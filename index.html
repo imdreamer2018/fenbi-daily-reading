@@ -1,53 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>File Tree</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    #file-tree {
+        border: 1px solid #ddd;
+        padding: 20px;
+    }
+
+    #file-tree ul {
+        list-style-type: none;
+        padding-left: 20px;
+    }
+
+    #file-tree li {
+        margin: 5px 0;
+    }
+
+    #file-tree a {
+        text-decoration: none;
+        color: #0366d6;
+    }
+
+    #file-tree a:hover {
+        text-decoration: underline;
+    }
+
+    #file-tree li::before {
+        content: '📁';
+        margin-right: 5px;
+    }
+
+    #file-tree li a::before {
+        content: '📄';
+        color: black;
+        margin-right: 5px;
+    }
+</style>
+</head>
+<body>
+
 <h1>仅个人使用，侵权必删！</h1>
-<h2>目录</h1>
+<h2>目录</h2>
 
 <div id="file-tree"></div>
 
 <script>
-    fetch('./script/fileList.json')
-        .then(response => response.json())
-        .then(files => {
-            const tree = createFileTree(files);
-            document.getElementById('file-tree').appendChild(tree);
-        });
+fetch('file_list_tree.json')
+    .then(response => response.json())
+    .then(files => {
+        const tree = createFileTree(files);
+        document.getElementById('file-tree').appendChild(tree);
+    });
 
-    function createFileTree(fileList) {
-        const root = document.createElement('ul');
+function createFileTree(fileList) {
+    const root = document.createElement('ul');
 
-        fileList.forEach(filePath => {
-            const parts = filePath.split('/');
-            let currentLevel = root;
+    fileList.forEach(filePath => {
+        const parts = filePath.split('/');
+        let currentLevel = root;
 
-            parts.forEach(part => {
-                let existingPath = Array.from(currentLevel.children).find(
-                    child => child.textContent === part
-                );
+        parts.forEach(part => {
+            let existingPath = Array.from(currentLevel.children).find(
+                child => child.textContent === part
+            );
 
-                if (!existingPath) {
-                    const newItem = document.createElement('li');
-                    newItem.textContent = part;
-                    currentLevel.appendChild(newItem);
+            if (!existingPath) {
+                const newItem = document.createElement('li');
+                newItem.textContent = part;
+                currentLevel.appendChild(newItem);
 
-                    if (part.includes('.')) {
-                        // It's a file
-                        const link = document.createElement('a');
-                        link.href = filePath;
-                        link.textContent = part;
-                        newItem.appendChild(link);
-                    } else {
-                        // It's a directory
-                        const newLevel = document.createElement('ul');
-                        newItem.appendChild(newLevel);
-                        currentLevel = newLevel;
-                    }
+                if (part.includes('.')) {
+                    // It's a file
+                    const link = document.createElement('a');
+                    link.href = filePath;
+                    link.textContent = part;
+                    newItem.appendChild(link);
                 } else {
-                    // Move to the next level
-                    currentLevel = existingPath.querySelector('ul') || existingPath;
+                    // It's a directory
+                    const newLevel = document.createElement('ul');
+                    newItem.appendChild(newLevel);
+                    currentLevel = newLevel;
                 }
-            });
+            } else {
+                // Move to the next level
+                currentLevel = existingPath.querySelector('ul') || existingPath;
+            }
         });
+    });
 
-        return root;
-    }
+    return root;
+}
 </script>
 
+</body>
+</html>

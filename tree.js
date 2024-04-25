@@ -13,5 +13,5 @@ function listFiles(dir, fileList = []) {
     return fileList;
 }
 
-const fileList = listFiles('../docs');
-fs.writeFileSync('fileList.json', JSON.stringify(fileList, null, 2));
+const fileList = listFiles('docs');
+fs.writeFileSync('file_list_tree.json', JSON.stringify(fileList, null, 2));
