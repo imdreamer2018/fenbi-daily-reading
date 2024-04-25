@@ -1,18 +1,53 @@
----
-layout: default
----
 <h1>仅个人使用，侵权必删！</h1>
 <h2>目录</h1>
 
-<ul>
-  {% for category in site.posts %}
-    <li>
-      <strong>{{ category[0] }}</strong>
-      <ul>
-        {% for post in category[1] %}
-          <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-        {% endfor %}
-      </ul>
-    </li>
-  {% endfor %}
-</ul>
+<div id="file-tree"></div>
+
+<script>
+    fetch('./script/fileList.json')
+        .then(response => response.json())
+        .then(files => {
+            const tree = createFileTree(files);
+            document.getElementById('file-tree').appendChild(tree);
+        });
+
+    function createFileTree(fileList) {
+        const root = document.createElement('ul');
+
+        fileList.forEach(filePath => {
+            const parts = filePath.split('/');
+            let currentLevel = root;
+
+            parts.forEach(part => {
+                let existingPath = Array.from(currentLevel.children).find(
+                    child => child.textContent === part
+                );
+
+                if (!existingPath) {
+                    const newItem = document.createElement('li');
+                    newItem.textContent = part;
+                    currentLevel.appendChild(newItem);
+
+                    if (part.includes('.')) {
+                        // It's a file
+                        const link = document.createElement('a');
+                        link.href = filePath;
+                        link.textContent = part;
+                        newItem.appendChild(link);
+                    } else {
+                        // It's a directory
+                        const newLevel = document.createElement('ul');
+                        newItem.appendChild(newLevel);
+                        currentLevel = newLevel;
+                    }
+                } else {
+                    // Move to the next level
+                    currentLevel = existingPath.querySelector('ul') || existingPath;
+                }
+            });
+        });
+
+        return root;
+    }
+</script>
+
