@@ -69,6 +69,7 @@
             const tree = createFileTree(files);
             document.getElementById('file-tree').appendChild(tree);
         });
+
     function createFileTree(fileList) {
         const root = document.createElement('ul');
 
@@ -86,16 +87,24 @@
 
                     if (index === parts.length - 1) {
                         // It's a file
+                        newItem.classList.add('file');
                         const link = document.createElement('a');
                         link.href = filePath;
                         link.textContent = part;
                         newItem.appendChild(link);
                     } else {
                         // It's a directory
-                        newItem.textContent = part;
+                        newItem.classList.add('folder');
+                        const span = document.createElement('span');
+                        span.textContent = part;
+                        newItem.appendChild(span);
                         const newLevel = document.createElement('ul');
                         newItem.appendChild(newLevel);
                         currentLevel = newLevel;
+                        span.onclick = function(event) {
+                            event.stopPropagation();
+                            newItem.classList.toggle('open');
+                        };
                     }
 
                     currentLevel.appendChild(newItem);
@@ -107,8 +116,7 @@
         });
 
         return root;
-}
-
+    }
 </script>
 
 </body>
